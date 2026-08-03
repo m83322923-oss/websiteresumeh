@@ -1,0 +1,225 @@
+body {
+  font-family: "Vazirmatn", sans-serif;
+  background-color: rgb(32, 39, 32);
+  padding: 32px 20px 60px;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+.heaad {
+  text-align: center;
+  color: white;
+}
+.digital {
+  color: rgb(156, 156, 41);
+}
+p {
+  color: gray;
+  margin-top: 30px;
+}
+h1 {
+  margin-top: 25px;
+}
+.put1 {
+  margin-top: 50px;
+  padding-left: 30px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 20px;
+  background-color: rgb(33, 63, 33);
+  color: rgb(117, 113, 113);
+  float: left;
+  width: 350px;
+  height: 40px;
+  border-radius: 40px;
+  border: 1px solid white;
+  margin-left: 160px;
+}
+.filters {
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid white;
+  background: transparent;
+  color: gray;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.filters:hover {
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid white;
+  background: transparent;
+  color: rgb(255, 255, 255);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  float: right;
+  margin-top: 50px;
+  margin-right: 160px;
+}
+.filters-all {
+  background-color: gold;
+  border-color: gold;
+  color: #1a1405;
+  padding: 9px 18px;
+  border-radius: 999px;
+  /* border: 1px solid var(--frame); */
+  /* background: transparent; */
+  color: white;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.line {
+
+  background-color: #70706e;
+  margin-top: 40px;
+  margin-left: 10%;
+  width: 80%;
+  height: 1px;
+  clear: both;
+
+}
+.count-line {
+text-align: center;
+    color: gray;
+    font-size: 20px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    min-height: 18px;
+}
+.frame-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+.frame-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    /* background: var(--bg-panel); */
+    border: 1px solid white;
+    aspect-ratio: 4 / 3;
+    cursor: pointer;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+}
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 20px;
+    row-gap: 20px;
+    column-gap: 20px;
+    align-content: space-between;
+    justify-content: space-around;
+    margin-left: 100px;
+}
+/* =======================
+   LIGHTBOX
+======================= */
+
+.lightbox-overlay{
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: .3s;
+    z-index: 1000;
+
+
+}
+
+.lightbox-overlay.open{
+    visibility: visible;
+    opacity: 1;
+}
+
+.lightbox-box:hover{
+    width: 80%;
+    max-width: 800px;
+    background: #1d2d27;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid #555;
+
+        animation: zoom 3s ;
+}
+
+.lightbox-box img{
+    width: 100%;
+    max-height: 70vh;
+    object-fit: cover;
+    display: block;
+}
+
+.lightbox-info{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+}
+
+.lightbox-info .title{
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.lightbox-info .cat{
+    color: gold;
+    font-size: 14px;
+}
+
+.lightbox-close{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: crimson;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.lightbox-close:hover{
+    background: red;
+}
+
+@keyframes zoom{
+    from{
+        transform: scale(.7);
+    }
+    to{
+        transform: scale(1);
+    }
+}
+@keyframes zoom2{
+    from{
+        transform: scale(.7);
+    }
+    to{
+        transform: scale(2);
+    }
+}

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>To Do List</title>
+<link rel="stylesheet" href="list.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>لیست کارها</h1>
+
+<input type="text" id="input" placeholder="کار جدید...">
+
+<button id="btn">افزودن</button>
+
+<div class="filters">
+<button onclick="showTodos('all')">همه</button>
+<button onclick="showTodos('done')">انجام شده</button>
+<button onclick="showTodos('not')">انجام نشده</button>
+</div>
+
+<h3 id="count"></h3>
+
+<ul id="list"></ul>
+
+</div>
+
+<script>
+    let input = document.getElementById("input");
+let btn = document.getElementById("btn");
+let list = document.getElementById("list");
+let count = document.getElementById("count");
+
+let todos = JSON.parse(localStorage.getItem("todos")) || [];
+
+showTodos("all");
+
+btn.onclick = function(){
+
+    if(input.value.trim()=="") return;
+
+    todos.push({
+
+        text:input.value,
+        done:false
+
+    });
+
+    input.value="";
+
+    save();
+
+    showTodos("all");
+
+}
+
+function showTodos(filter){
+
+    list.innerHTML="";
+
+    let left=0;
+
+    todos.forEach(function(todo,index){
+
+        if(filter=="done" && !todo.done) return;
+
+        if(filter=="not" && todo.done) return;
+
+        let li=document.createElement("li");
+
+        if(todo.done){
+
+            li.classList.add("done");
+
+        }
+
+        li.innerText=todo.text;
+
+        li.onclick=function(){
+
+            todo.done=!todo.done;
+
+            save();
+
+            showTodos(filter);
+
+        }
+
+        let del=document.createElement("button");
+
+        del.innerText="حذف";
+
+        del.className="delete";
+
+        del.onclick=function(event){
+
+            event.stopPropagation();
+
+            todos.splice(index,1);
+
+            save();
+
+            showTodos(filter);
+
+        }
+
+        li.appendChild(del);
+
+        list.appendChild(li);
+
+        if(!todo.done){
+
+            left++;
+
+        }
+
+    });
+
+    count.innerText="کارهای باقی‌مانده : "+left;
+
+}
+
+function save(){
+
+    localStorage.setItem("todos",JSON.stringify(todos));
+
+}
+</script>
+
+</body>
+</html>

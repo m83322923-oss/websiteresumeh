@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+body{
+    transition:1s ease;
+}
+
+/* آفتابی */
+body.Clear{
+    background:linear-gradient(135deg,#FDB813,#FF6B00);
+}
+
+/* ابری */
+body.Clouds{
+    background:linear-gradient(135deg,#6d7d8b,#bfc8d4);
+}
+
+/* بارانی */
+body.Rain{
+    background:linear-gradient(135deg,#2C3E50,#4CA1AF);
+}
+
+/* رعد و برق */
+body.Thunderstorm{
+    background:linear-gradient(135deg,#232526,#414345);
+}
+
+/* برفی */
+body.Snow{
+    background:linear-gradient(135deg,#d7e1ec,#ffffff);
+}
+
+/* مه */
+body.Mist,
+body.Fog,
+body.Haze{
+    background:linear-gradient(135deg,#757F9A,#D7DDE8);
+}
+
+/* نم‌نم */
+body.Drizzle{
+    background:linear-gradient(135deg,#4B79A1,#89c2d9);
+}
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#4facfe,#00f2fe);
+    background-size:cover;
+    background-position:center;
+    transition:1s;
+    overflow:hidden;
+}
+
+/* افکت پس‌زمینه */
+body::before{
+    content:"";
+    position:absolute;
+    width:500px;
+    height:500px;
+    background:rgba(255,255,255,.15);
+    border-radius:50%;
+    top:-180px;
+    right:-180px;
+    filter:blur(20px);
+}
+
+body::after{
+    content:"";
+    position:absolute;
+    width:350px;
+    height:350px;
+    background:rgba(255,255,255,.1);
+    border-radius:50%;
+    bottom:-120px;
+    left:-120px;
+    filter:blur(25px);
+}
+
+.container{
+    position:relative;
+    z-index:10;
+    width:420px;
+    padding:30px;
+    border-radius:30px;
+    background:rgba(255,255,255,.15);
+    backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,.3);
+    box-shadow:0 20px 50px rgba(0,0,0,.35);
+    text-align:center;
+    color:white;
+}
+
+#puti{
+    width:100%;
+    padding:16px;
+    border:none;
+    outline:none;
+    border-radius:50px;
+    font-size:18px;
+    margin-bottom:20px;
+    background:rgba(255,255,255,.9);
+}
+
+#puti::placeholder{
+    color:#666;
+}
+
+#butt{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:50px;
+    cursor:pointer;
+    font-size:18px;
+    font-weight:bold;
+    color:white;
+    background:linear-gradient(45deg,#00c6ff,#0072ff);
+    transition:.3s;
+}
+
+#butt:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 20px #00c6ff;
+}
+
+#loader{
+    width:55px;
+    height:55px;
+    border:5px solid rgba(255,255,255,.4);
+    border-top:5px solid white;
+    border-radius:50%;
+    margin:20px auto;
+    display:none;
+    animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+#icons{
+    font-size:110px;
+    margin:20px 0;
+    animation:float 2s ease-in-out infinite;
+}
+
+@keyframes float{
+    50%{
+        transform:translateY(-12px);
+    }
+}
+
+#temp{
+    margin-top:20px;
+    font-size:48px;
+    font-weight:bold;
+}
+
+#weather_conditions,
+#humidity,#threeday{
+    margin-top:18px;
+    padding:15px;
+    border-radius:20px;
+    background:rgba(255,255,255,.12);
+    font-size:22px;
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
+}
+
+p{
+    font-weight:600;
+}
+
+.show{
+    animation:show .8s;
+}
+
+@keyframes show{
+    from{
+        opacity:0;
+        transform:translateY(30px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+@media(max-width:500px){
+
+.container{
+    width:95%;
+    padding:20px;
+}
+
+#temp{
+    font-size:40px;
+}
+
+#icons{
+    font-size:85px;
+}
+
+}

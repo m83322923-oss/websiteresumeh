@@ -1,0 +1,178 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="conatainer">
+    <input id="puti"  placeholder="Enter your city">
+    <br>
+    <br>
+    <br>
+    <br>
+    <button id="butt" onclick="hava()">click me</button>
+    <div id="loader"></div>
+    <div id="temp">
+      
+      <div>
+        <p>Temp:</p>
+      </div>
+    </div>
+
+    <div id="weather_conditions">
+      <p>weather conditions:</p>
+    </div>
+
+    <div id="icons"></div>
+    <div id="humidity">
+      <p>humidity:</p>
+    </div>
+    <div id="threeday">
+<p>Forecast for the next 3 days:</p>
+    </div>
+    </div>
+    <script>
+            function hava(){
+         let putt = document.getElementById("puti").value;
+            let butt = document.getElementById("butt").value;
+
+            fetch(`http://api.openweathermap.org/data/2.5/weather?appid=d77e70bfb701e0bfe2dc6f59f1c67e2f&q=${putt}&units=metric`)
+            .then(function(response){
+      return response.json();
+            })
+      .then(function(data){
+      console.log(data);
+      document.getElementById("temp").innerHTML=data['main']['temp'];
+      })
+
+
+
+            fetch(`http://api.openweathermap.org/data/2.5/weather?appid=d77e70bfb701e0bfe2dc6f59f1c67e2f&q=${putt}&units=metric`)
+            .then(function(response){
+      return response.json();
+            })
+      .then(function(data){
+      // console.log(data);
+      document.getElementById("weather_conditions").innerHTML=data['weather'][0]['main'];
+      })
+
+
+            fetch(`http://api.openweathermap.org/data/2.5/weather?appid=d77e70bfb701e0bfe2dc6f59f1c67e2f&q=${putt}&units=metric`)
+            .then(function(response){
+      return response.json();
+            })
+      .then(function(data){
+      // console.log(data);
+      document.getElementById("humidity").innerHTML=data['main']['humidity'];
+      })
+
+
+
+      let load=document.getElementById("loader").style.display = "block";
+
+      fetch(`http://api.openweathermap.org/data/2.5/weather?appid=d77e70bfb701e0bfe2dc6f59f1c67e2f&q=${putt}&units=metric`)
+      .then(function(response){
+          return response.json();
+      })
+      .then(function(data){
+
+          // نمایش اطلاعات
+      let load=document.getElementById("loader").style.display = "none";
+
+      });
+
+
+
+
+
+
+      function getWeatherIcon(weather){
+
+          if(weather == "Clear"){
+              document.getElementById("icons").innerHTML='☀️';
+          }
+
+          else if(weather == "Clouds"){
+              document.getElementById("icons").innerHTML='☁️';
+          }
+
+          else if(weather == "Rain"){
+               document.getElementById("icons").innerHTML='🌧️';
+
+          }
+
+          else if(weather == "Snow"){
+              document.getElementById("icons").innerHTML='❄️';
+
+          }
+
+          else if(weather == "Thunderstorm"){
+              document.getElementById("icons").innerHTML='⛈️';
+
+          }
+
+          else if(weather == "Drizzle"){
+              document.getElementById("icons").innerHTML='🌦️';
+
+          }
+
+          else if(weather == "Mist"){
+              document.getElementById("icons").innerHTML='🌫️';
+
+          }
+
+          else{
+              document.getElementById("icons").innerHTML='🌎';
+          }
+
+      }
+
+
+            fetch(`http://api.openweathermap.org/data/2.5/weather?appid=d77e70bfb701e0bfe2dc6f59f1c67e2f&q=${putt}&units=metric`)
+            .then(function(response){
+      return response.json();
+            })
+      .then(function(data){
+      // console.log(data);
+      let weather = data['weather'][0]['main'];
+
+      let icon = getWeatherIcon(weather);
+document.body.classList.remove(
+    "Clear",
+    "Clouds",
+    "Rain",
+    "Snow",
+    "Thunderstorm",
+    "Drizzle",
+    "Mist",
+    "Fog",
+    "Haze"
+);
+
+document.body.classList.add(weather);
+      // console.log(icon)
+      })
+           getWeatherIcon();
+fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${putt}&appid=d77e70bfb701e0bfe2dc6f59f1c67e2f&units=metric`)
+.then(response => response.json())
+.then(data => {
+    console.log(data);
+
+    // روز اول
+  // console.log(data.list[0].main.temp);
+
+    // حدود روز دوم
+  // console.log(data.list[8].main.temp);
+
+    // حدود روز سوم
+ document.getElementById("threeday").innerHTML=data.list[16].main.temp;
+});
+
+
+
+
+
+
+            }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,228 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="gallery.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&family=Lalezar&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="heaad">
+      <header>
+        <div class="digital">Digital Exhibition</div>
+        <h1>photo Exhibition</h1>
+        <p>a selection of Urban nature and wildlife</p>
+      </header>
+      <div>
+        <div>
+          <input
+            id="searchInput"
+            class="put1"
+            type="text"
+            placeholder="search..."
+            aria-label="جست‌وجو"
+            autocomplete="on"
+          />
+        </div>
+
+        <div
+          class="filter"
+          id="filters"
+          role="group"
+          aria-label="فیلتر دسته‌بندی"
+        >
+          <button type="button" aria-pressed="true" class="filters-all" onclick="showimage('همه')">
+            all
+          </button>
+          <button type="button" aria-pressed="false" class="filters" onclick="showimage('کوه')">
+            mountian
+          </button>
+          <button type="button" aria-pressed="false" class="filters" onclick="showimage('انیمه')">
+            anime
+          </button>
+          <button type="button" aria-pressed="false" class="filters" onclick="showimage('حیوانات')">
+            animals
+          </button>
+        </div>
+        <div style="clear: both"></div>
+        <div class="line"></div>
+      </div>
+      <div class="count-line" id="countLine">9 photo</div>
+
+      <div class="gallery" id="gallery"></div>
+    </div>
+    <div class="lightbox-overlay" id="lightboxOverlay">
+      <div
+        class="lightbox-box"
+        role="dialog"
+        aria-modal="true"
+        aria-label="نمایش بزرگ تصویر"
+      >
+        <img id="lightboxImg" src="" alt="" />
+        <div class="lightbox-info">
+          <div>
+            <div class="title" id="lightboxTitle"></div>
+            <span class="cat" id="lightboxCat"></span>
+          </div>
+          <button class="lightbox-close" id="lightboxClose" aria-label="بستن">
+            ✕
+          </button>
+        </div>
+      </div>
+    </div>
+    <script>
+      let images = [
+        {
+          title: "mountain,کوه",
+          cat: "کوه",
+          url: "img/images.jpg",
+        },
+        {
+          title: "jungle,جنگل",
+          cat: "جنگل",
+          url: "img/jangal.jpg",
+        },
+        {
+          title: "kaguya,انیمه",
+          cat: "انیمه",
+          url: "img/kaguya.jpg",
+        },
+        {
+          title: "sento,انیمه",
+          cat: "انیمه",
+          url: "img/sento.jpg",
+        },
+        {
+          title: "sukuna,انیمه",
+          cat: "انیمه",
+          url: "img/sukuna.jpg",
+        },
+        {
+          title: "owl,جغد",
+          cat: "حیوانات",
+          url: "img/joqd.jpg",
+        },
+        {
+          title: "hedgehog,جوجه تیغی",
+          cat: "حیوانات",
+          url: "img/tiqi.jpg",
+        },
+        {
+          title: "lion,شیر",
+          cat: "حیوانات",
+          url: "img/shir.jpg",
+        },
+        {
+          title: "fox,روباه",
+          cat: "حیوانات",
+          url: "img/robah.jpg",
+        },
+        {
+          title: "deer,آهو,اهو",
+          cat: "حیوانات",
+          url: "img/aho.jpg",
+        },
+        {
+          title: "peacock,طاووس",
+          cat: "حیوانات",
+          url: "img/tavoos.jpg",
+        },
+        {
+          title: "cheetah,یوز پلنگ",
+          cat: "حیوانات",
+          url: "img/yozpalang.jpg",
+        },
+                                {
+          title: "butterfly,پروانه",
+          cat: "حیوانات",
+          url: "img/animal.jpg",
+        },
+      ];
+
+      let gallery = document.getElementById("gallery");
+      let search = document.getElementById("searchInput");
+
+function showimage(category){
+
+    gallery.innerHTML = "";
+
+    images.forEach(function(img){
+
+        if(category == "همه" || img.cat == category){
+
+            gallery.innerHTML += 
+            `<div class="frame-card">
+                <img src="${img.url}">
+                <div class="plaque">
+                    <div class="title">${img.title}</div>
+                    <div class="cat">${img.cat}</div>
+                </div>
+            </div>`
+            ;
+
+        }
+
+    });
+
+}
+
+function showImages(list){
+
+  gallery.innerHTML="";
+
+  list.forEach(function(img){
+
+    gallery.innerHTML += 
+
+    `<div class="frame-card">
+      <img src="${img.url}">
+      <div class="plaque">
+        <div class="title">${img.title}</div>
+        <div class="cat">${img.cat}</div>
+      </div>
+    </div>`
+    
+;
+
+  });
+
+}
+
+
+showImages(images);
+
+
+
+      search.addEventListener("input", function () {
+        let text = search.value;
+
+        let result = images.filter(function (img) {
+          return img.title.includes(text);
+        });
+
+        showImages(result);
+      });
+      let cards = document.querySelectorAll(".frame-card");
+
+cards.forEach(function(card){
+
+    card.onclick = function(){
+
+        let img = card.querySelector("img");
+
+        document.getElementById("lightboxImg").src = img.src;
+
+        document.getElementById("lightboxOverlay").classList.add("open");
+
+    };
+
+});document.getElementById("lightboxClose").onclick = function(){
+
+    document.getElementById("lightboxOverlay").classList.remove("open");
+
+}; 
+
+    </script>
+  </body>
+</html>

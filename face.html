@@ -212,6 +212,117 @@ function track() {
 
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  const now = performance.now();
+
+  try {
+
+    const result = detector.detectForVideo(
+      video,
+      now
+    );
+
+    const faces = result.detections || [];
+
+    count.textContent = faces.length;
+
+    for (const face of faces) {
+
+      const box = face.boundingBox;
+
+      const x = box.originX;
+      const y = box.originY;
+
+      const width = box.width;
+      const height = box.height;
+
+      ctx.strokeStyle = "#00ff88";
+      ctx.lineWidth = 4;
+
+      ctx.strokeRect(
+        x,
+        y,
+        width,
+        height
+      );
+    }
+
+  } catch (error) {
+
+    console.error("Tracking error:", error);
+  }
+
+  animationId = requestAnimationFrame(track);
+}
+
+
+// ------------------------------
+// Stop Camera
+// ------------------------------
+function stopCamera() {
+
+  cameraRunning = false;
+
+  if (animationId) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
+
+  if (stream) {
+
+    stream.getTracks().forEach(track => {
+      track.stop();
+    });
+
+    stream = null;
+  }
+
+  video.srcObject = null;
+
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  count.textContent = "0";
+
+  status.textContent = "خاموش";
+  trackingState.textContent = "آماده";
+  message.textContent =
+    "برای شروع روی «فعال کردن دوربین» بزن.";
+
+  startBtn.disabled = false;
+  stopBtn.disabled = true;
+}
+
+
+// ------------------------------
+// Buttons
+// ------------------------------
+startBtn.addEventListener(
+  "click",
+  startCamera
+);
+
+stopBtn.addEventListener(
+  "click",
+  stopCamera
+);
+
+
+// ------------------------------
+// Initial state
+// ------------------------------
+status.textContent = "آماده";
+trackingState.textContent = "آماده";
   </script>
 </body>
 </html>

@@ -1,339 +1,144 @@
-/* ===========================================
-   PRELOADER
-=========================================== */
+import {
+  FaceDetector,
+  FilesetResolver
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/+esm";
 
-window.addEventListener("load", () => {
-    const preloader = document.getElementById("preloader");
+const video = document.getElementById("video");
+const canvas = document.getElementById("overlay");
+const ctx = canvas.getContext("2d");
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+const statusEl = document.getElementById("status");
+const message = document.getElementById("message");
+const countEl = document.getElementById("count");
+const trackingState = document.getElementById("trackingState");
 
-    if (preloader) {
-        preloader.style.opacity = "0";
+let detector = null;
+let stream = null;
+let running = false;
+let lastVideoTime = -1;
 
-        setTimeout(() => {
-            preloader.style.display = "none";
-        }, 500);
-    }
-});
+async function createDetector() {
+  const vision = await FilesetResolver.forVisionTasks(
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm"
+  );
 
-/* ===========================================
-   MOBILE MENU
-=========================================== */
-
-const menuBtn = document.getElementById("menu-btn");
-const nav = document.getElementById("nav");
-
-if (menuBtn && nav) {
-    menuBtn.addEventListener("click", () => {
-        nav.classList.toggle("show");
-    });
-
-    document.querySelectorAll("#nav a").forEach(link => {
-        link.addEventListener("click", () => {
-            nav.classList.remove("show");
-        });
-    });
+  detector = await FaceDetector.createFromOptions(vision, {
+    baseOptions: {
+      modelAssetPath:
+        "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite",
+      delegate: "GPU"
+    },
+    runningMode: "VIDEO",
+    minDetectionConfidence: 0.5
+  });
 }
 
-/* ===========================================
-   DARK MODE
-=========================================== */
+async function startCamera() {
+  try {
+    statusEl.textContent = "در حال بارگذاری مدل...";
+    await createDetector();
 
-const themeToggle = document.getElementById("theme-toggle");
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: "user",
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      },
+      audio: false
+    });
 
-const savedTheme = localStorage.getItem("theme");
+    video.srcObject = stream;
+    await video.play();
 
-if (savedTheme === "dark") {
-    document.body.classList.add("dark");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
-    if (themeToggle) {
-        themeToggle.innerHTML =
-            '<i class="fa-solid fa-sun"></i>';
-    }
+    running = true;
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+    message.style.display = "none";
+    statusEl.textContent = "در حال ردیابی";
+    trackingState.textContent = "فعال";
+
+    requestAnimationFrame(track);
+  } catch (error) {
+    console.error(error);
+    statusEl.textContent = "خطا";
+    trackingState.textContent = "دوربین فعال نشد";
+    message.style.display = "block";
+    message.textContent =
+      "دسترسی دوربین رد شد یا مرورگر از دوربین پشتیبانی نمی‌کند.";
+  }
 }
 
-if (themeToggle) {
+function drawFace(box) {
+  const x = box.originX;
+  const y = box.originY;
+  const w = box.width;
+  const h = box.height;
 
-    themeToggle.addEventListener("click", () => {
+  // ویدیو آینه‌ای است؛ مختصات باکس را هم آینه می‌کنیم.
+  const mirroredX = canvas.width - x - w;
 
-        document.body.classList.toggle("dark");
+  ctx.strokeStyle = "#00ff9d";
+  ctx.lineWidth = Math.max(3, canvas.width / 400);
+  ctx.strokeRect(mirroredX, y, w, h);
 
-        if (document.body.classList.contains("dark")) {
-
-            localStorage.setItem("theme", "dark");
-
-            themeToggle.innerHTML =
-                '<i class="fa-solid fa-sun"></i>';
-
-        } else {
-
-            localStorage.setItem("theme", "light");
-
-            themeToggle.innerHTML =
-                '<i class="fa-solid fa-moon"></i>';
-
-        }
-
-    });
-
+  ctx.fillStyle = "#00ff9d";
+  ctx.font = `${Math.max(16, canvas.width / 45)}px Arial`;
+  ctx.fillText("Face", mirroredX, Math.max(24, y - 10));
 }
 
-/* ===========================================
-   TYPING EFFECT
-=========================================== */
+function track() {
+  if (!running || video.readyState < 2) {
+    if (running) requestAnimationFrame(track);
+    return;
+  }
 
-const typingElement = document.getElementById("typing");
+  if (video.currentTime !== lastVideoTime) {
+    lastVideoTime = video.currentTime;
 
-const words = [
-    "Frontend Developer",
-    "UI/UX Designer",
-    "JavaScript Developer",
-    "Python Programmer",
-    "Freelancer"
-];
+    const result = detector.detectForVideo(video, performance.now());
 
-let wordIndex = 0;
-let letterIndex = 0;
-let deleting = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-function typeEffect() {
+    const detections = result.detections || [];
+    countEl.textContent = detections.length;
 
-    if (!typingElement) return;
+    detections.forEach((detection) => {
+      if (detection.boundingBox) {
+        drawFace(detection.boundingBox);
+      }
+    });
 
-    const currentWord = words[wordIndex];
+    trackingState.textContent =
+      detections.length > 0 ? "چهره پیدا شد" : "در حال جستجو...";
+  }
 
-    if (!deleting) {
-
-        typingElement.textContent =
-            currentWord.substring(0, letterIndex + 1);
-
-        letterIndex++;
-
-        if (letterIndex === currentWord.length) {
-
-            deleting = true;
-
-            setTimeout(typeEffect, 1800);
-
-            return;
-
-        }
-
-    } else {
-
-        typingElement.textContent =
-            currentWord.substring(0, letterIndex - 1);
-
-        letterIndex--;
-
-        if (letterIndex === 0) {
-
-            deleting = false;
-
-            wordIndex++;
-
-            if (wordIndex >= words.length)
-                wordIndex = 0;
-
-        }
-
-    }
-
-    setTimeout(typeEffect, deleting ? 60 : 120);
-
+  requestAnimationFrame(track);
 }
 
-typeEffect();
+function stopCamera() {
+  running = false;
 
-/* ===========================================
-   ACTIVE NAV LINK
-=========================================== */
+  if (stream) {
+    stream.getTracks().forEach((track) => track.stop());
+    stream = null;
+  }
 
-const sections = document.querySelectorAll("section");
-const navLinks = document.querySelectorAll("nav a");
+  video.srcObject = null;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-window.addEventListener("scroll", () => {
+  countEl.textContent = "0";
+  trackingState.textContent = "آماده";
+  statusEl.textContent = "خاموش";
+  message.style.display = "block";
+  message.textContent = "برای شروع روی «فعال کردن دوربین» بزن.";
 
-    let current = "";
-
-    sections.forEach(section => {
-
-        const top = section.offsetTop - 120;
-
-        if (scrollY >= top) {
-            current = section.getAttribute("id");
-        }
-
-    });
-
-    navLinks.forEach(link => {
-
-        link.classList.remove("active");
-
-        if (link.getAttribute("href") === "#" + current) {
-
-            link.classList.add("active");
-
-        }
-
-    });
-
-});
-
-/* ===========================================
-   HEADER SHADOW
-=========================================== */
-
-const header = document.querySelector("header");
-
-window.addEventListener("scroll", () => {
-
-    if (window.scrollY > 30) {
-
-        header.style.boxShadow =
-            "0 8px 25px rgba(0,0,0,.08)";
-
-    } else {
-
-        header.style.boxShadow = "none";
-
-    }
-
-});
-
-/* ===========================================
-   SCROLL TO TOP
-=========================================== */
-
-const scrollBtn = document.getElementById("scrollTop");
-
-window.addEventListener("scroll", () => {
-
-    if (window.scrollY > 500) {
-
-        scrollBtn.classList.add("show");
-
-    } else {
-
-        scrollBtn.classList.remove("show");
-
-    }
-
-});
-
-scrollBtn.addEventListener("click", () => {
-
-    window.scrollTo({
-
-        top: 0,
-
-        behavior: "smooth"
-
-    });
-
-});
-
-/* ===========================================
-   CONTACT FORM
-=========================================== */
-
-const form = document.getElementById("contactForm");
-
-if (form) {
-
-    form.addEventListener("submit", function (e) {
-
-        e.preventDefault();
-
-        alert("Thank you! Your message has been sent.");
-
-        form.reset();
-
-    });
-
+  startBtn.disabled = false;
+  stopBtn.disabled = true;
 }
 
-/* ===========================================
-   SCROLL ANIMATION
-=========================================== */
-
-const observer = new IntersectionObserver(entries => {
-
-    entries.forEach(entry => {
-
-        if (entry.isIntersecting) {
-
-            entry.target.classList.add("visible");
-
-        }
-
-    });
-
-}, {
-
-    threshold: 0.2
-
-});
-
-document.querySelectorAll(
-    ".hero-content,.hero-image,.about-grid,.skill,.project-card,#contact form"
-).forEach(el => {
-
-    el.classList.add("hidden");
-
-    observer.observe(el);
-
-});
-
-/* ===========================================
-   SKILL BAR ANIMATION
-=========================================== */
-
-const skillObserver = new IntersectionObserver(entries => {
-
-    entries.forEach(entry => {
-
-        if (entry.isIntersecting) {
-
-            const bar =
-                entry.target.querySelector(".progress div");
-
-            if (bar) {
-
-                const width = bar.style.width;
-
-                bar.style.width = "0";
-
-                setTimeout(() => {
-
-                    bar.style.width = width;
-
-                }, 100);
-
-            }
-
-        }
-
-    });
-
-}, {
-
-    threshold: 0.4
-
-});
-
-document.querySelectorAll(".skill").forEach(skill => {
-
-    skillObserver.observe(skill);
-
-});
-
-/* ===========================================
-   CURRENT YEAR
-=========================================== */
-
-const year = document.getElementById("year");
-
-if (year) {
-
-    year.textContent = new Date().getFullYear();
-
-}
+startBtn.addEventListener("click", startCamera);
+stopBtn.addEventListener("click", stopCamera);
